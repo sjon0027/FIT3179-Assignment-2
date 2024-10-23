@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Insights in Australia</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+
+    <style>
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f9ff;
+            color: #333;
+            line-height: 1.75;
+        }
+
+        .title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            color: #1a237e;
+            margin-top: 50px;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: grid;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .two-column {
+            display: flex;
+            gap: 40px;
+        }
+
+        .single-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .graph-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .description {
+            background-color: #f9fafb;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 300;
+            line-height: 1.75;
+        }
+
+        a {
+            text-decoration: none;
+            color: #1565c0;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #0d47a1;
+        }
+
+        .data-sources {
+            text-align: center;
+            padding: 20px;
+            background-color: #e3f2fd;
+            border-top: 1px solid #bbdefb;
+            margin-top: 40px;
+            font-weight: 400;
+        }
+
+        .inline {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .inline>.graph-container,
+        .inline>.description {
+            flex: 1;
+        }
+
+        .description h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                flex-direction: column;
+            }
+
+            .title {
+                font-size: 2rem;
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="title">Medical Insights in Australia</div>
+
+    <!-- Graph 1 container -->
+    <div class="container inline">
+        <div class="graph-container">
+            <div class="graph" id="map"></div>
+        </div>
+        <div class="description map-description">
+            <h3>Explore Healthcare Facilities Across Australia</h3>
+            This map shows various healthcare facilities including clinics, hospitals, pharmacies, and more. Colored markers help distinguish facility types, while hovering reveals more detailed information about each location.
+        </div>
+    </div>
+
+    <!-- Graph 2 container -->
+    <div class="container inline">
+        <div class="description barChart-description">
+            <h3>Compare Healthcare Data Completeness</h3>
+            This bar chart displays the average completeness score for different types of healthcare facilities. Use the dropdown menu to filter specific amenities and compare how well information is documented across different services.
+        </div>
+        <div class="graph-container">
+            <div class="graph" id="barChart"></div>
+        </div>
+    </div>
+
+    <!-- Graph 3 container -->
+    <div class="container single-column">
+        <div class="graph-container">
+            <div class="graph" id="lollipopChart"></div>
+        </div>
+        <div class="description">
+            <h3>Health Indicators Over Time</h3>
+            The lollipop chart above showcases key health indicators such as deaths and Disability-Adjusted Life Years (DALYs). Select a year from the dropdown menu to see specific data, with tooltips revealing more details for each point.
+        </div>
+    </div>
+
+    <!-- Graphs 4 and 5 in-line containers -->
+    <div class="container two-column">
+        <div class="graph-and-description">
+            <div class="graph-container">
+                <div class="graph" id="pieChart"></div>
+            </div>
+            <div class="description">
+                <h3>Gender-Specific Health Indicators</h3>
+                This pie chart highlights the distribution of health indicators by gender. Hover over a slice to learn more about the indicators for each group and discover trends across specific years.
+            </div>
+        </div>
+        <div class="graph-and-description">
+            <div class="graph-container">
+                <div class="graph" id="lineChart"></div>
+            </div>
+            <div class="description">
+                <h3>Tracking Health Trends Over Time</h3>
+                The line chart visualizes health trends such as obesity, cholesterol, and physical activity among adults. Use the dropdown to focus on specific indicators and compare data across genders.
+            </div>
+        </div>
+    </div>
+
+    <div class="data-sources">
+        <strong>Sources:</strong>
+        <a href="https://data.humdata.org/dataset/australia-healthsites">Australia Healthcare Facilities</a>, 
+        <a href="https://data.humdata.org/dataset/who-data-for-aus">Australian WHO Data</a>
+    </div>
+
+    <script>
+        let mapView, barView;
+
+        function embedGraph(id, filePath) {
+            return vegaEmbed(id, filePath, { actions: false })
+                .then(result => result.view)
+                .catch(console.error);
+        }
+
+        function updateSelection(amenity) {
+            mapView.signal("AmenitySelection", amenity).run();
+            barView.signal("AmenitySelection", amenity).run();
+        }
+
+        Promise.all([
+            embedGraph("#map", "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/map.vg.json"),
+            embedGraph("#barChart", "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/barChart.vg.json")
+        ]).then(views => {
+            mapView = views[0];
+            barView = views[1];
+
+            mapView.addSignalListener("AmenitySelection", (name, value) => {
+                updateSelection(value);
+            });
+
+            barView.addSignalListener("AmenitySelection", (name, value) => {
+                updateSelection(value);
+            });
+        });
+
+        embedGraph("#lollipopChart", "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/lollipopChart.vg.json");
+        embedGraph("#pieChart", "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/pieChart.vg.json");
+        embedGraph("#lineChart", "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/lineChart.vg.json");
+    </script>
+
+</body>
+
+</html>
