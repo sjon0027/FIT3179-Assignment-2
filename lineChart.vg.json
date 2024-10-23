@@ -1,0 +1,109 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Line chart showing various health indicators among adults in Australia over time, broken down by sex.",
+  "data": {
+    "url": "https://raw.githubusercontent.com/sjon0027/FIT3179-Week-10-Homework/refs/heads/main/health_indicators_aus.csv",
+    "format": {"type": "csv"}
+  },
+  "params": [
+    {
+      "name": "indicator",
+      "value": "NCD_BMI_30C",
+      "bind": {
+        "input": "select",
+        "options": [
+          "NCD_BMI_30C",
+          "NCD_BMI_25C",
+          "NCD_BMI_18C",
+          "NCD_GLUC_03",
+          "NCD_CHOL_MEANTOTALCHOL_A",
+          "NCD_PAC"
+        ],
+        "labels": [
+          "Prevalence of Obesity (BMI ≥30)",
+          "Prevalence of Overweight (BMI ≥25)",
+          "Prevalence of Underweight (BMI <18)",
+          "Raised Fasting Blood Glucose (≥7.0 mmol/L)",
+          "Mean Total Cholesterol",
+          "Insufficient Physical Activity"
+        ],
+        "name": "Select Indicator"
+      }
+    },
+    {
+      "name": "indicator_label",
+      "expr": "if(indicator == 'NCD_BMI_30C', 'Prevalence of Obesity (BMI ≥30)', indicator == 'NCD_BMI_25C' ? 'Prevalence of Overweight (BMI ≥25)' : indicator == 'NCD_BMI_18C' ? 'Prevalence of Underweight (BMI <18)' : indicator == 'NCD_GLUC_03' ? 'Raised Fasting Blood Glucose (≥7.0 mmol/L)' : indicator == 'NCD_CHOL_MEANTOTALCHOL_A' ? 'Mean Total Cholesterol' : indicator == 'NCD_PAC' ? 'Insufficient Physical Activity' : '')"
+    }
+  ],
+  "transform": [
+    {
+      "filter": "datum['GHO (CODE)'] == indicator"
+    },
+    {
+      "filter": "datum['Numeric'] != null && datum['Numeric'] != ''"
+    },
+    {
+      "calculate": "toNumber(datum['YEAR (DISPLAY)'])",
+      "as": "parsed_year"
+    }
+  ],
+  "width": 380,
+  "height": 400,
+  "title": {"text": {"signal": "indicator_label"}},
+  "layer": [
+    {
+      "mark": "line",
+      "encoding": {
+        "x": {
+          "field": "parsed_year",
+          "type": "quantitative",
+          "title": "Year",
+          "axis": {"format": "d"}
+        },
+        "y": {
+          "field": "Numeric",
+          "type": "quantitative",
+          "title": {"signal": "indicator_label"}
+        },
+        "color": {
+          "field": "DIMENSION (NAME)",
+          "type": "nominal",
+          "title": "Sex",
+          "scale": {"scheme": "set2"}
+        },
+        "tooltip": [
+          {"field": "parsed_year", "type": "quantitative", "title": "Year"},
+          {"field": "DIMENSION (NAME)", "type": "nominal", "title": "Sex"},
+          {"field": "Numeric", "type": "quantitative", "title": {"signal": "indicator_label"}},
+          {"field": "Value", "type": "nominal", "title": "Value Range"}
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "text": "Men have more obesity rates despite relatively greater activity.",
+            "x": 2007,
+            "y": 3
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "fill": "red",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "dx": 0,
+        "dy": -50
+      },
+      "encoding": {
+        "x": {"field": "x", "type": "quantitative"},
+        "y": {"field": "y", "type": "quantitative"},
+        "text": {"field": "text", "type": "nominal"}
+      }
+    }
+  ]
+}

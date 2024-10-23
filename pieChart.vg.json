@@ -1,0 +1,50 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Pie chart illustrating the proportion of health indicators reported for Male, Female, and Both sexes in a selected year.",
+  "title": "Proportion of Health Indicators Reported by Sex in Selected Year",
+  "data": {
+    "url": "https://raw.githubusercontent.com/sjon0027/FIT3179-Week-10-Homework/refs/heads/main/health_indicators_aus.csv",
+    "format": {"type": "csv"}
+  },
+  "params": [
+    {
+      "name": "year_selection",
+      "value": 2021,
+      "bind": {
+        "input": "select",
+        "options": [2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012],
+        "name": "Select Year: "
+      }
+    }
+  ],
+  "transform": [
+    {
+      "filter": "datum['DIMENSION (TYPE)'] === 'SEX'"
+    },
+    {
+      "filter": "datum['DIMENSION (NAME)'] === 'Male' || datum['DIMENSION (NAME)'] === 'Female' || datum['DIMENSION (NAME)'] === 'Both sexes'"
+    },
+    {
+      "filter": "datum['YEAR (DISPLAY)'] == year_selection"
+    },
+    {
+      "aggregate": [{"op": "count", "as": "count"}],
+      "groupby": ["DIMENSION (NAME)"]
+    }
+  ],
+  "mark": {"type": "arc", "innerRadius": 0},
+  "encoding": {
+    "theta": {"field": "count", "type": "quantitative"},
+    "color": {
+      "field": "DIMENSION (NAME)",
+      "type": "nominal",
+      "title": "Sex",
+      "scale": {"scheme": "set2"}
+    },
+    "tooltip": [
+      {"field": "DIMENSION (NAME)", "type": "nominal", "title": "Sex"},
+      {"field": "count", "type": "quantitative", "title": "Number of Indicators"}
+    ]
+  },
+  "view": {"stroke": null}
+}

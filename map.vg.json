@@ -1,0 +1,116 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 450,
+  "height": 450,
+  "title": "Healthcare Facilities in Australia",
+  "projection": {"type": "equirectangular"},
+  "params": [
+    {
+      "name": "AmenitySelection",
+      "bind": {
+        "input": "select",
+        "options": [
+          null,
+          "clinic",
+          "dentist",
+          "doctors",
+          "hospital",
+          "pharmacy",
+          "Podiatrist"
+        ],
+        "labels": [
+          "Show All",
+          "Clinic",
+          "Dentist",
+          "Doctors",
+          "Hospital",
+          "Pharmacy",
+          "Podiatrist"
+        ],
+        "name": "Select Amenity Type: "
+      }
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/ne_110m.json",
+        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+      },
+      "mark": {"type": "geoshape", "fill": "#a9a9a9", "stroke": "#ffffff"}
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/sjon0027/FIT3179-Week-10-Homework/refs/heads/main/australia_hxl_cleaned_locations_only.csv"
+      },
+      "transform": [
+        {
+          "filter": "AmenitySelection == null || datum['#loc+amenity'] === AmenitySelection"
+        }
+      ],
+      "mark": {"type": "circle", "size": 50},
+      "encoding": {
+        "longitude": {"field": "X", "type": "quantitative", "title": "Longitude"},
+        "latitude": {"field": "Y", "type": "quantitative", "title": "Latitude"},
+        "color": {
+          "field": "#loc+amenity",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Podiatrist", "clinic", "dentist", "doctors", "hospital", "pharmacy"],
+            "range": ["#17becf", "#ff7f0e", "#d62728", "#2ca02c", "#9467bd", "#bcbd22"]
+          },
+          "legend": {"orient": "right", "title": "Facility Type"}
+        },
+        "tooltip": [
+          {"field": "#loc+name", "type": "nominal", "title": "Location Name"},
+          {"field": "#loc+amenity", "type": "nominal", "title": "Amenity"},
+          {"field": "#meta+healthcare", "type": "nominal", "title": "Healthcare Metadata"},
+          {"field": "#meta+operator", "type": "nominal", "title": "Operator Metadata"},
+          {"field": "#meta+speciality", "type": "nominal", "title": "Speciality"},
+          {"field": "addr_postcode", "type": "nominal", "title": "Postcode"},
+          {"field": "completeness", "type": "quantitative", "title": "Completeness"}
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {"city": "Sydney", "lat": -33.8688, "lon": 151.2093},
+          {"city": "Melbourne", "lat": -37.8136, "lon": 144.9631},
+          {"city": "Brisbane", "lat": -27.4698, "lon": 153.0251},
+          {"city": "Perth", "lat": -31.9505, "lon": 115.8605},
+          {"city": "Adelaide", "lat": -34.9285, "lon": 138.6007}
+        ]
+      },
+      "mark": {"type": "text", "fontSize": 12, "fontWeight": "bold"},
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude": {"field": "lat", "type": "quantitative"},
+        "text": {"field": "city", "type": "nominal"}
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "text": "Densely clustered healthcare facilities near Sydney",
+            "lon": 153.5,
+            "lat": -34.0
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 14,
+        "fontWeight": "bold",
+        "align": "left",
+        "fill": "red"
+      },
+      "encoding": {
+        "longitude": {"field": "lon", "type": "quantitative"},
+        "latitude": {"field": "lat", "type": "quantitative"},
+        "text": {"field": "text", "type": "nominal"}
+      }
+    }
+  ]
+}

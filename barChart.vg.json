@@ -1,0 +1,97 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/sjon0027/FIT3179-Week-10-Homework/refs/heads/main/australia_hxl_cleaned.csv",
+    "format": {"type": "csv"}
+  },
+  "params": [
+    {
+      "name": "AmenitySelection",
+      "bind": {
+        "input": "select",
+        "options": [
+          null,
+          "clinic",
+          "dentist",
+          "doctors",
+          "hospital",
+          "pharmacy",
+          "Podiatrist"
+        ],
+        "labels": [
+          "Show All",
+          "Clinic",
+          "Dentist",
+          "Doctors",
+          "Hospital",
+          "Pharmacy",
+          "Podiatrist"
+        ],
+        "name": "Select Amenity Type: "
+      }
+    }
+  ],
+  "transform": [
+    {
+      "filter": "AmenitySelection == null || datum['#loc+amenity'] == AmenitySelection"
+    }
+  ],
+  "layer": [
+    {
+      "mark": "bar",
+      "encoding": {
+        "x": {"field": "#loc+amenity", "type": "nominal", "title": "Amenity"},
+        "y": {
+          "aggregate": "mean",
+          "field": "completeness",
+          "type": "quantitative",
+          "title": "Average Completeness"
+        },
+        "color": {
+          "field": "#loc+amenity",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Podiatrist", "clinic", "dentist", "doctors", "hospital", "pharmacy"],
+            "range": ["#17becf", "#ff7f0e", "#d62728", "#2ca02c", "#9467bd", "#bcbd22"]
+          },
+          "title": "Amenity Type"
+        },
+        "tooltip": [
+          {"field": "#loc+amenity", "type": "nominal", "title": "Amenity"},
+          {
+            "aggregate": "mean",
+            "field": "completeness",
+            "type": "quantitative",
+            "title": "Average Completeness"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "dy": -10,
+        "color": "black"
+      },
+      "encoding": {
+        "text": {
+          "aggregate": "mean",
+          "field": "completeness",
+          "type": "quantitative",
+          "format": ".2f"
+        },
+        "x": {"field": "#loc+amenity", "type": "nominal"},
+        "y": {
+          "aggregate": "mean",
+          "field": "completeness",
+          "type": "quantitative"
+        }
+      }
+    }
+  ],
+  "width": 400,
+  "height": 300,
+  "interactive": true
+}
