@@ -1,9 +1,13 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "width": 450,
-  "height": 450,
+  "width": 600,
+  "height": 300,
   "title": "Healthcare Facilities in Australia",
-  "projection": {"type": "equirectangular"},
+  "projection": {
+    "type": "equirectangular",
+    "center": [147, -29],
+    "scale": 480
+  },
   "params": [
     {
       "name": "AmenitySelection",
@@ -32,6 +36,14 @@
     }
   ],
   "layer": [
+    {
+      "data": {"graticule": true},
+      "mark": {
+        "type": "geoshape",
+        "stroke": "lightgray",
+        "strokeWidth": 0.5
+      }
+    },
     {
       "data": {
         "url": "https://raw.githubusercontent.com/sjon0027/FIT3179-Assignment-2/refs/heads/main/ne_110m.json",
@@ -93,15 +105,18 @@
       "data": {
         "values": [
           {
-            "text": "Densely clustered healthcare facilities near Sydney",
-            "lon": 153.5,
-            "lat": -34.0
-          }
+            "text": "Densely clustered healthcare",
+            "lon": 155,
+            "lat": -34
+          },
+          {"text": "facilities near Sydney",
+            "lon": 155,
+            "lat": -37}
         ]
       },
       "mark": {
         "type": "text",
-        "fontSize": 14,
+        "fontSize": 13,
         "fontWeight": "bold",
         "align": "left",
         "fill": "red"

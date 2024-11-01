@@ -193,7 +193,7 @@
         let mapView, barView;
 
         function embedGraph(id, filePath) {
-            return vegaEmbed(id, filePath, { actions: false })
+            return vegaEmbed(id, filePath, { actions: true })
                 .then(result => result.view)
                 .catch(console.error);
         }
